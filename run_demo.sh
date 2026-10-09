@@ -7,12 +7,14 @@ cd "$(dirname "$0")"
 # Default configuration
 SIMULATOR="mujoco"
 CAMERA=""
+NUM_DRONES=10
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         --sim) SIMULATOR="$2"; shift ;;
         --camera) CAMERA="--camera" ;;
+        -n|--num) NUM_DRONES="$2"; shift ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift
@@ -33,6 +35,7 @@ echo " Firmware  : Bitcraze SITL Master"
 echo " Physics   : $SIMULATOR"
 echo " ROS 2     : Crazyswarm2 (Humble)"
 echo " SDK       : cflib / cfclient"
+echo " Drones    : $NUM_DRONES"
 echo "=========================================================================="
 
 # Allow local X11 connections for the simulator GUI
@@ -51,7 +54,7 @@ docker exec crazyflie_sitl bash -c "git config --global --add safe.directory '*'
 
 echo "[3/3] Launching $SIMULATOR Backend..."
 if [ "$SIMULATOR" == "gazebo" ]; then
-    docker exec crazyflie_sitl bash -c "cd /CrazySim/crazyflie-firmware && bash tools/crazyflie-simulation/simulator_files/gazebo/launch/sitl_multiagent_square.sh -n 10"
+    docker exec crazyflie_sitl bash -c "cd /CrazySim/crazyflie-firmware && bash tools/crazyflie-simulation/simulator_files/gazebo/launch/sitl_multiagent_square.sh -n $NUM_DRONES"
 else
-    docker exec crazyflie_sitl bash -c "cd /CrazySim/crazyflie-firmware && bash tools/crazyflie-simulation/simulator_files/mujoco/launch/sitl_multiagent_square.sh -n 10 --vis $CAMERA"
+    docker exec crazyflie_sitl bash -c "cd /CrazySim/crazyflie-firmware && bash tools/crazyflie-simulation/simulator_files/mujoco/launch/sitl_multiagent_square.sh -n $NUM_DRONES -m cf_indoor --vis $CAMERA"
 fi

@@ -14,4 +14,4 @@ if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER}$"; then
     exit 1
 fi
 
-docker exec -it "${CONTAINER}" bash -c "source /ros2_ws/install/setup.bash && cd /examples && python3 /examples/ex1_single_rectangle.py"
+docker exec -e RMW_IMPLEMENTATION=rmw_cyclonedds_cpp -it "${CONTAINER}" bash -c "source /ros2_ws/install/setup.bash && cd /examples && python3 /examples/ex1_single_rectangle.py"
